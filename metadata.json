@@ -1,0 +1,6 @@
+{
+  "name": "CloudSOC Lab",
+  "description": "Realistic, interactive SOC Analyst & Cloud Security training platform with hands-on SIEM log triage, attack timeline reconstruction, MITRE ATT&CK mapping, and Senior AI SOC Mentor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
