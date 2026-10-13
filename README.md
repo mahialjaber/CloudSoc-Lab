@@ -122,8 +122,8 @@ com.example/
 ### Building the Project
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/cloudsoc-lab.git
-   cd cloudsoc-lab
+   git clone https://github.com/mahialjaber/CloudSoc-Lab.git
+   cd CloudSoc-Lab
    ```
 
 2. *(Optional)* Configure your Gemini API key for live AI Mentorship:

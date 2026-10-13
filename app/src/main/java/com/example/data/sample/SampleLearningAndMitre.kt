@@ -24,6 +24,14 @@ object SampleLearningAndMitre {
                 mitigation = "Enforce IMDSv2 (HttpTokens=required) on all EC2 instances, apply AWS WAF managed rule sets, and implement rigorous input URL validation."
             ),
             MitreTechnique(
+                id = "T1110.001",
+                name = "Brute Force: Password Guessing",
+                tactic = "Initial Access",
+                description = "Adversaries may systematically guess passwords against internet-exposed SSH/RDP services or cloud identity endpoints to gain initial access.",
+                cloudDetectionQuery = "source:auditd AND (result:\"failed\" OR message:\"Failed password\") | stats count by src_ip having count > 20",
+                mitigation = "Enforce fail2ban, SSH key-only authentication, and AWS Security Group restrictions on port 22."
+            ),
+            MitreTechnique(
                 id = "T1059.001",
                 name = "Command and Scripting Interpreter: PowerShell",
                 tactic = "Execution",
@@ -64,12 +72,28 @@ object SampleLearningAndMitre {
                 mitigation = "Implement AWS IAM Permissions Boundaries on all non-admin roles and alert instantly on privileged policy attachment events."
             ),
             MitreTechnique(
+                id = "T1098",
+                name = "Account Manipulation: Role Trust Tampering",
+                tactic = "Privilege Escalation",
+                description = "Adversaries may modify trust policies on existing IAM roles to allow external adversary accounts or unauthorized identities to assume them.",
+                cloudDetectionQuery = "eventSource:iam.amazonaws.com AND (eventName:UpdateAssumeRolePolicy OR eventName:PutRolePolicy)",
+                mitigation = "Monitor UpdateAssumeRolePolicy events in CloudTrail and enforce SCPs restricting external account trust relationships."
+            ),
+            MitreTechnique(
                 id = "T1562.001",
                 name = "Impair Defenses: Disable Cloud Security Controls",
                 tactic = "Defense Evasion",
                 description = "Adversaries may stop CloudTrail logging (StopLogging, DeleteTrail), disable GuardDuty detectors, or modify S3 Bucket Policies to public.",
                 cloudDetectionQuery = "eventSource:cloudtrail.amazonaws.com AND (eventName:StopLogging OR eventName:DeleteTrail OR eventName:UpdateDetector)",
                 mitigation = "Apply SCPs preventing deletion or modification of CloudTrail, GuardDuty, and Config across all member accounts."
+            ),
+            MitreTechnique(
+                id = "T1055",
+                name = "Process Injection",
+                tactic = "Defense Evasion",
+                description = "Adversaries may inject code into processes in order to evade process-based defenses as well as possibly elevate privileges.",
+                cloudDetectionQuery = "source:Sysmon AND EventID:8 AND (SourceImage:*powershell* OR TargetImage:*svchost*)",
+                mitigation = "Implement endpoint detection and response (EDR) memory scanning and restrict debug privileges."
             ),
             MitreTechnique(
                 id = "T1003.001",
@@ -102,6 +126,14 @@ object SampleLearningAndMitre {
                 description = "Adversaries may share snapshots (RDS, EBS) or replicate S3 buckets directly to an external, adversary-controlled cloud account.",
                 cloudDetectionQuery = "eventName:ModifyDBSnapshotAttribute OR eventName:ModifyImageAttribute AND requestParameters.valuesToAdd:*",
                 mitigation = "Enforce SCPs disallowing snapshot sharing across AWS Organization boundaries."
+            ),
+            MitreTechnique(
+                id = "T1041",
+                name = "Exfiltration Over C2 Channel",
+                tactic = "Exfiltration",
+                description = "Adversaries may steal data by transferring it over an existing command and control channel rather than over an alternate path.",
+                cloudDetectionQuery = "source:VPC_Flow AND dest_port:443 AND bytes > 500000000 AND (dest_ip:* OR action:ACCEPT)",
+                mitigation = "Enforce egress filtering and proxy inspection for all outbound traffic."
             ),
             MitreTechnique(
                 id = "T1496",
