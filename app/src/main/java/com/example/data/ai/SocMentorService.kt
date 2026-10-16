@@ -14,8 +14,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 @JsonClass(generateAdapter = true)
@@ -48,7 +48,7 @@ data class GeminiResponse(
 interface GeminiRestApi {
     @POST("v1beta/models/gemini-2.5-flash:generateContent")
     suspend fun generateContent(
-        @Query("key") apiKey: String,
+        @Header("x-goog-api-key") apiKey: String,
         @Body request: GeminiRequest
     ): GeminiResponse
 }
@@ -57,7 +57,8 @@ class SocMentorService {
 
     private val api: GeminiRestApi by lazy {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
+            redactHeader("x-goog-api-key")
         }
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
